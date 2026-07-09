@@ -7,7 +7,6 @@
         #game-container { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
         ruffle-player { width: 800px; height: 600px; display: block; }
     </style>
-    <!-- 구글 샌드박스를 우회하는 안정적인 Ruffle 엔진 로드 -->
     <script src="https://cloudflare.com"></script>
 </head>
 <body>
@@ -17,23 +16,25 @@
     <script>
         // 1. 주소창의 ?game= 값에서 파일 이름 추출
         const urlParams = new URLSearchParams(window.location.search);
-        const gameName = urlParams.get('game');
+        const gameName = urlParams.get('game') || "temple-of-boom";
+        const swfFileName = gameName + ".swf";
 
-        // ?game= 값이 없을 때 기본으로 켜질 SWF 파일 이름 (원하는 파일명으로 수정 가능)
-        const defaultGame = "temple-of-boom"; 
-        const finalGameName = gameName ? gameName : defaultGame;
+        // 2. [핵심] 구글 샌드박스를 깨부수기 위해 현재 HTML 파일이 실행 중인 진짜 인터넷 절대 경로 추출
+        // 예: https://yourdomain.com 형태의 Base URL을 자동으로 땁니다.
+        const currentFolderUrl = window.location.href.split('?')[0].split('#')[0];
+        const baseDir = currentFolderUrl.substring(0, currentFolderUrl.lastIndexOf('/') + 1);
+        
+        // 최종 완전한 절대 경로 완성 (예: https://yourdomain.comtemple-of-boom.swf)
+        const absoluteSwfPath = baseDir + swfFileName;
 
-        // 2. 같은 디렉토리이므로 복잡한 URL 없이 파일명만 조립
-        const fullSwfPath = finalGameName + ".swf";
-
-        // 3. 타이밍 에러를 방지하는 안전한 구동부
+        // 3. 안정적인 플레이어 구동
         customElements.whenDefined('ruffle-player').then(() => {
             const container = document.getElementById("game-container");
             const player = document.createElement('ruffle-player');
             container.appendChild(player);
 
             player.load({
-                url: fullSwfPath,
+                url: absoluteSwfPath,
                 allowScriptAccess: true
             });
         });
