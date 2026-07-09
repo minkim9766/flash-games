@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
+        #game-container { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        ruffle-player { width: 800px; height: 600px; display: block; }
+    </style>
+    <script src="https://cloudflare.com"></script>
+</head>
+<body>
+
+    <div id="game-container"></div>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            // 1. 주소창에서 ?game= 뒤에 오는 텍스트 추출
+            const urlParams = new URLSearchParams(window.location.search);
+            const gameName = urlParams.get('game'); // 예: 'temple-of-boom'
+            
+            // 기본값 설정 (주소 뒤에 아무것도 안 적었을 때 켜질 기본 게임 이름)
+            const finalGame = gameName ? gameName : "default-game"; 
+
+            // 2. 본인의 SWF 파일들이 모여있는 공유 사이트 기본 경로 설정
+            const baseFolderUrl = "https://xn--ob0bq71akxcvza77rtjatg1a116a8s7a.com";
+            const fullSwfUrl = baseFolderUrl + finalGame + ".swf";
+
+            // 3. Ruffle 플레이어 동적 생성 및 삽입
+            const container = document.getElementById("game-container");
+            const player = window.RufflePlayer.newest().createPlayer();
+            container.appendChild(player);
+
+            player.load({
+                url: fullSwfUrl,
+                allowScriptAccess: true
+            });
+        });
+    </script>
+
+</body>
+</html>
