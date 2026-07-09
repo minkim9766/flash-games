@@ -2,14 +2,18 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>SWF Player</title>
+<title>SWF Game Player</title>
+
 <script src="ruffle.js"></script>
+
 <style>
 html, body {
     margin: 0;
+    padding: 0;
     width: 100%;
     height: 100%;
-    background: black;
+    overflow: hidden;
+    background: #000;
 }
 
 #player {
@@ -17,6 +21,7 @@ html, body {
     height: 100%;
 }
 </style>
+
 </head>
 
 <body>
@@ -24,9 +29,19 @@ html, body {
 <div id="player"></div>
 
 <script>
-const game = new URLSearchParams(location.search).get("game");
+(function () {
 
-if (game) {
+    const params = new URLSearchParams(window.location.search);
+    const game = params.get("game");
+
+    if (!game) {
+        document.getElementById("player").innerHTML =
+            "게임이 지정되지 않았습니다.<br>예: index.html?game=game1";
+        return;
+    }
+
+    const swf = game + ".swf";
+
     const ruffle = window.RufflePlayer.newest();
     const player = ruffle.createPlayer();
 
@@ -35,8 +50,11 @@ if (game) {
 
     document.getElementById("player").appendChild(player);
 
-    player.load(game + ".swf");
-}
+    player.load({
+        url: swf
+    });
+
+})();
 </script>
 
 </body>
