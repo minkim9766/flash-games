@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <title>SWF Game Player</title>
 
+<script>
+window.RufflePlayer = window.RufflePlayer || {};
+
+window.RufflePlayer.config = {
+    autoplay: "on",
+    unmuteOverlay: "hidden",
+    scale: "showAll",
+    letterbox: "on",
+    warnOnUnsupportedContent: false
+};
+</script>
+
 <script src="ruffle.js"></script>
 
 <style>
@@ -17,6 +29,11 @@ html, body {
 }
 
 #player {
+    width: 100vw;
+    height: 100vh;
+}
+
+ruffle-player {
     width: 100%;
     height: 100%;
 }
@@ -29,32 +46,32 @@ html, body {
 <div id="player"></div>
 
 <script>
-(function () {
 
-    const params = new URLSearchParams(window.location.search);
-    const game = params.get("game");
+const params = new URLSearchParams(window.location.search);
+const game = params.get("game");
 
-    if (!game) {
-        document.getElementById("player").innerHTML =
-            "게임이 지정되지 않았습니다.<br>예: index.html?game=game1";
-        return;
-    }
+if (!game) {
 
-    const swf = game + ".swf";
+    document.getElementById("player").innerHTML =
+        "게임 파일 없음<br><br>사용법:<br>index.html?game=game1";
+
+} else {
 
     const ruffle = window.RufflePlayer.newest();
+
     const player = ruffle.createPlayer();
 
-    player.style.width = "100%";
-    player.style.height = "100%";
+    player.style.width = "100vw";
+    player.style.height = "100vh";
 
     document.getElementById("player").appendChild(player);
 
     player.load({
-        url: swf
+        url: game + ".swf"
     });
 
-})();
+}
+
 </script>
 
 </body>
