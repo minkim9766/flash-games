@@ -7,7 +7,7 @@
         #game-container { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
         ruffle-player { width: 800px; height: 600px; display: block; }
     </style>
-    <!-- 가장 안전한 cdnjs 경로에서 스크립트 빌려오기 -->
+    <!-- 구글 샌드박스를 우회하는 안정적인 Ruffle 엔진 로드 -->
     <script src="https://cloudflare.com"></script>
 </head>
 <body>
@@ -15,26 +15,25 @@
     <div id="game-container"></div>
 
     <script>
-        // 1. 주소창에서 ?game= 값 미리 읽어두기
+        // 1. 주소창의 ?game= 값에서 파일 이름 추출
         const urlParams = new URLSearchParams(window.location.search);
-        const gameName = urlParams.get('game') || "default-game"; 
+        const gameName = urlParams.get('game');
 
-        // 2. 파일이 저장된 본인의 기본 폴더 주소 (끝에 슬래시 / 필수)
-        const baseFolderUrl = "https://xn--ob0bq71akxcvza77rtjatg1a116a8s7a.com";
-        const fullSwfUrl = baseFolderUrl + gameName + ".swf";
+        // ?game= 값이 없을 때 기본으로 켜질 SWF 파일 이름 (원하는 파일명으로 수정 가능)
+        const defaultGame = "temple-of-boom"; 
+        const finalGameName = gameName ? gameName : defaultGame;
 
-        // 3. window.RufflePlayer 자바스크립트 호출 에러를 완벽히 피하는 우회 공식
-        // 브라우저에 <ruffle-player> 라는 태그 기능이 정의 완료되는 순간을 감지합니다.
+        // 2. 같은 디렉토리이므로 복잡한 URL 없이 파일명만 조립
+        const fullSwfPath = finalGameName + ".swf";
+
+        // 3. 타이밍 에러를 방지하는 안전한 구동부
         customElements.whenDefined('ruffle-player').then(() => {
             const container = document.getElementById("game-container");
-            
-            // HTML 태그 형태로 엘리먼트를 직접 생성 (자바스크립트 내부 객체 에러 원천 차단)
             const player = document.createElement('ruffle-player');
             container.appendChild(player);
 
-            // 주소 및 세팅 주입
             player.load({
-                url: fullSwfUrl,
+                url: fullSwfPath,
                 allowScriptAccess: true
             });
         });
